@@ -165,7 +165,6 @@ if chroot "$ROOTFS_DIR" /usr/bin/apt-cache show "$extra_modules_package" >/dev/n
 else
     printf 'No %s package is published for kernel %s; retaining the signed split HWE modules in the profile.\n' "$extra_modules_package" "$kernel_version"
 fi
-chroot "$ROOTFS_DIR" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get purge --yes 'linux-headers-*'
 chroot "$ROOTFS_DIR" /usr/sbin/update-initramfs -u -k "$kernel_version"
 systemctl --root="$ROOTFS_DIR" enable lightdm.service NetworkManager.service
 systemctl --root="$ROOTFS_DIR" set-default graphical.target
@@ -196,6 +195,10 @@ find "$ROOTFS_DIR/usr/share/locale" -mindepth 1 -maxdepth 1 \
 rm -f "$ROOTFS_DIR/var/lib/dbus/machine-id"
 ln -s /etc/machine-id "$ROOTFS_DIR/var/lib/dbus/machine-id"
 
+printf 'Largest post-trim installed root filesystem directories (before squashfs):\n'
+du -x -B1 --max-depth=2 "$ROOTFS_DIR" | sort -nr | head -n 21 \
+    | awk -v root="$ROOTFS_DIR" '{ path = $2; sub(root, ".", path); printf "  %8.1f MiB  %s\n", $1 / 1048576, path }'
+
 cp "$ISO_BOOT_DIR/boot/grub/grub.cfg" "$STAGE_DIR/boot/grub/grub.cfg"
 printf 'Compressing the Zorin-profiled live root filesystem (xz, %s worker(s))...\n' "$JOBS"
 mksquashfs "$ROOTFS_DIR" "$STAGE_DIR/casper/filesystem.squashfs" \
@@ -216,6 +219,7 @@ squash_bytes="$(stat -c '%s' "$STAGE_DIR/casper/filesystem.squashfs")"
     printf 'Desktop: official Zorin OS Lite Xsession (startxfce4); P4DE starter, NotreOS theme/panel/menu icon, first-run Welcome\n'
     printf 'Kernel: Ubuntu 24.04 HWE kernel %s\n' "$kernel_version"
     printf 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package; legacy linux-modules-extra only when published for this kernel\n'
+    printf 'Firmware trim: signed Ubuntu consumer Wi-Fi/graphics firmware splits; omitted NVIDIA and data-center-only blobs from the full metapackage\n'
     printf 'Boot: GRUB UEFI and BIOS live ISO; casper read-only squashfs\n'
     printf 'Offline apps: Epiphany browser, Thunar file manager, Mousepad editor, Ristretto image viewer, File Roller, XFCE Terminal\n'
     printf 'Installed root filesystem before compression: %s bytes (%.1f MiB)\n' \

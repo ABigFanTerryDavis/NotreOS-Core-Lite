@@ -33,7 +33,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install --no-install-recommends -y \
             curl debootstrap gnupg grub-efi-amd64-bin grub-pc-bin mtools \
-            ovmf qemu-system-x86 squashfs-tools xorriso
+            imagemagick ovmf qemu-system-gui qemu-system-x86 squashfs-tools \
+            tesseract-ocr x11-apps xorriso xvfb
       - name: Build NotreOS Core Lite from the Zorin OS 18.1 Lite package profile
         run: sudo env NOTREOS_JOBS=2 ./scripts/build-core-lite.sh
       - name: Boot the live ISO under OVMF/QEMU
@@ -51,6 +52,18 @@ jobs:
           python3 tests/core-lite/boot-smoke.py \
             output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso \
             "$firmware_code" "$firmware_vars"
+      - name: Boot the live ISO and verify the graphical NotreOS desktop
+        run: |
+          set -euo pipefail
+          firmware_code=/usr/share/OVMF/OVMF_CODE_4M.fd
+          firmware_vars_template=/usr/share/OVMF/OVMF_VARS_4M.fd
+          firmware_vars="$RUNNER_TEMP/OVMF_VARS_GUI.fd"
+          cp "$firmware_vars_template" "$firmware_vars"
+          xvfb-run -a -s '-screen 0 1280x960x24' \
+            python3 tests/core-lite/graphical-smoke.py \
+              output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso \
+              "$firmware_code" "$firmware_vars" \
+              output/core-lite/images/notreos-core-lite-desktop-smoke.png
       - name: Upload the measured Core Lite image
         if: always() && hashFiles('output/core-lite/images/*.iso') != ''
         uses: actions/upload-artifact@v4
@@ -61,3 +74,4 @@ jobs:
             output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso
             output/core-lite/images/notreos-core-lite-0.0.1-manifest.txt
             output/core-lite/images/SHA256SUMS
+            output/core-lite/images/notreos-core-lite-desktop-smoke.png

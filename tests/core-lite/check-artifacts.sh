@@ -28,7 +28,11 @@ manifest_has_package() {
 }
 for package in zorin-os-lite-desktop-minimal zorin-os-lite-default-settings \
                zorin-os-lite-live-settings xfce4-zorinmenulite-plugin xfdesktop4 \
-               linux-modules-iwlwifi-generic-hwe-24.04; do
+               linux-image-generic-hwe-24.04 linux-modules-iwlwifi-generic-hwe-24.04 \
+               epiphany-browser file-roller \
+               mousepad ristretto thunar xfce4-terminal linux-firmware-intel-wireless \
+               linux-firmware-broadcom-wireless linux-firmware-realtek \
+               linux-firmware-mediatek linux-firmware-qualcomm-wireless; do
     if ! manifest_has_package "$package"; then
         echo "Core Lite ISO is missing required package: $package" >&2
         grep -E '^(zorin-os|xfce4-zorinmenulite-plugin|xfdesktop4|linux-modules-iwlwifi)' \
@@ -36,6 +40,10 @@ for package in zorin-os-lite-desktop-minimal zorin-os-lite-default-settings \
         exit 1
     fi
 done
+if manifest_has_package linux-firmware; then
+    echo 'Core Lite ISO must not install the full linux-firmware metapackage.' >&2
+    exit 1
+fi
 xfdesktop_version="$(awk '$1 == "xfdesktop4" { print $2; exit }' "$inspect_dir/filesystem.manifest")"
 if [[ ! "$xfdesktop_version" =~ ^4\.20\. ]]; then
     echo 'Core Lite ISO must contain the Zorin-compatible XFCE 4.20 desktop package.' >&2; exit 1
@@ -65,6 +73,7 @@ grep -Fq 'Zorin repositories: Launchpad Zorin OS Stable and Patches PPAs' "$MANI
 grep -Fq 'Required Zorin Lite packages: zorin-os-lite-desktop-minimal, zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin' "$MANIFEST"
 grep -Fq 'official Zorin OS Lite Xsession (startxfce4)' "$MANIFEST"
 grep -Fq 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package' "$MANIFEST"
+grep -Fq 'Firmware trim: signed Ubuntu consumer Wi-Fi/graphics firmware splits' "$MANIFEST"
 
 printf '%s\n' 'Core Lite ISO and live-root checks passed.'
 printf '%s\n' "$report" | grep -E 'El Torito|UEFI|image[0-9]' || true

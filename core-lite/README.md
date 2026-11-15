@@ -10,9 +10,9 @@ LightDM starts Zorin's packaged `zorin-os-lite` Xsession entry, which launches `
 
 Epiphany, Thunar, Mousepad, Ristretto, File Roller, and XFCE Terminal are included in the ISO, so these basic tools are available without downloading them after boot. NetworkManager and its panel applet are included for Wi-Fi and wired setup. The official [Zorin OS 18.1 Lite package list](https://assets.zorincdn.com/zorin.com/downloads/installed-package-lists/18/Zorin-OS-18.1-Lite.zip) is the reference for the upstream Lite profile.
 
-The image uses Ubuntu 24.04's HWE kernel and includes the signed generic Intel Wi-Fi module package. Ubuntu's current Noble 7.0 kernel line splits these drivers into specific signed packages instead of publishing `linux-modules-extra-<kernel>`; the builder installs that legacy package only when the selected kernel version actually provides it.
+The image uses Ubuntu 24.04's HWE kernel and includes the signed generic Intel Wi-Fi module package. Ubuntu's current Noble 7.0 kernel line splits these drivers into specific signed packages instead of publishing `linux-modules-extra-<kernel>`; the builder installs that legacy package only when the selected kernel version actually provides it. To avoid the unusually large full `linux-firmware` metapackage, Core Lite installs Ubuntu-signed firmware splits for common Intel/AMD graphics and consumer Wi-Fi adapters (Intel, Broadcom, Realtek, MediaTek, Qualcomm, and Marvell). NVIDIA graphics and specialist data-center firmware splits are omitted; a machine that needs one of those blobs may need the matching package added later.
 
-The generated `casper/filesystem.manifest` records package/version pairs. The ISO check verifies the selected Zorin packages, HWE Wi-Fi modules, XFCE version, and Zorin Lite session against those entries.
+The generated `casper/filesystem.manifest` records package/version pairs. The ISO check verifies the selected Zorin packages, required offline apps, HWE Wi-Fi modules, common firmware splits, XFCE version, and Zorin Lite session against those entries. The build also reports its largest post-trim filesystem directories so remaining size contributors are measurable rather than guessed.
 
 ## Build and test
 
@@ -23,7 +23,7 @@ sudo ./scripts/build-core-lite.sh
 ./tests/core-lite/smoke.sh
 ```
 
-The build creates `output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso`, a manifest, and `SHA256SUMS`. It packages the installed system as a casper squashfs live root and creates UEFI/BIOS GRUB boot entries. The repository's `Build NotreOS Core Lite` GitHub Actions workflow installs the tools, builds the image, checks the ISO and live root, then boots it under OVMF/QEMU.
+The build creates `output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso`, a manifest, and `SHA256SUMS`. It packages the installed system as a casper squashfs live root and creates UEFI/BIOS GRUB boot entries. The repository's `Build NotreOS Core Lite` GitHub Actions workflow installs the tools, builds and checks the ISO, boots it under OVMF/QEMU to verify the serial login, then performs a second UEFI boot with a virtual display and OCR-checks the NotreOS Welcome window. The graphical test screenshot is included with the workflow artifacts.
 
 The initial size aim is roughly 700–800 MiB, not a guaranteed cap. The manifest records the actual compressed-root and ISO sizes; the build warns if the ISO exceeds 800 MiB rather than truncating it or hiding the result.
 

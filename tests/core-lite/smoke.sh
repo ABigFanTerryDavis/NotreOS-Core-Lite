@@ -5,6 +5,7 @@ PROFILE="$ROOT_DIR/core-lite"
 
 bash -n "$ROOT_DIR/scripts/build-core-lite.sh"
 sh -n "$PROFILE/overlay/usr/bin/notreos-welcome"
+python3 -m py_compile "$ROOT_DIR/tests/core-lite/boot-smoke.py" "$ROOT_DIR/tests/core-lite/graphical-smoke.py"
 python3 - "$PROFILE" <<'PY'
 import pathlib
 import sys
@@ -35,15 +36,19 @@ packages = set(package_lines)
 assert len(package_lines) == len(packages), "Core Lite package profile contains duplicate entries"
 required = {
     "casper", "epiphany-browser", "file-roller", "fonts-zorin-os-core",
-    "libgtk-3-bin", "linux-firmware", "linux-generic-hwe-24.04",
+    "libgtk-3-bin", "linux-image-generic-hwe-24.04",
     "linux-modules-iwlwifi-generic-hwe-24.04", "mousepad", "network-manager",
-    "ristretto", "thunar", "xfdesktop4", "xfce4-panel", "xfce4-session",
-    "xserver-xorg", "zorin-os-lite-desktop-minimal",
+    "ristretto", "thunar", "xfce4-terminal", "xfdesktop4", "xfce4-panel",
+    "xfce4-session", "xserver-xorg", "zorin-os-lite-desktop-minimal",
     "zorin-os-lite-default-settings", "zorin-os-lite-live-settings",
-    "xfce4-zorinmenulite-plugin",
+    "xfce4-zorinmenulite-plugin", "linux-firmware-amd-graphics",
+    "linux-firmware-broadcom-wireless", "linux-firmware-intel-graphics",
+    "linux-firmware-intel-wireless", "linux-firmware-mediatek",
+    "linux-firmware-qualcomm-wireless", "linux-firmware-realtek",
 }
 missing = required - packages
 assert not missing, f"missing required Core Lite packages: {sorted(missing)}"
+assert "linux-firmware" not in packages, "do not install the full firmware metapackage"
 assert not ({"snapd", "ubuntu-desktop", "xfce4-whiskermenu-plugin"} & packages), \
     "Core Lite must remain minimal and use Zorin Menu Lite rather than a generic substitute"
 
