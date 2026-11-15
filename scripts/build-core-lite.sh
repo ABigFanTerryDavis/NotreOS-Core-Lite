@@ -210,7 +210,8 @@ squash_bytes="$(stat -c '%s' "$STAGE_DIR/casper/filesystem.squashfs")"
     printf 'Architecture: x86_64 (Ubuntu package architecture: amd64)\n'
     printf 'Base system: Zorin OS 18.1 Lite official minimal/live package profile on Ubuntu 24.04 LTS (Noble)\n'
     printf 'Zorin repositories: Launchpad Zorin OS Stable and Patches PPAs, noble/main; signing key fingerprint %s\n' "$ZORIN_KEY_FINGERPRINT"
-    printf 'Required Zorin Lite packages: zorin-os-lite-desktop-minimal, zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin\n'
+    printf 'Zorin Lite profile seed verified before header pruning: zorin-os-lite-desktop-minimal\n'
+    printf 'Retained Zorin desktop packages: zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin, xfdesktop4\n'
     printf 'Desktop: official Zorin OS Lite Xsession (startxfce4); P4DE starter, NotreOS theme/panel/menu icon, first-run Welcome\n'
     printf 'Kernel: Ubuntu 24.04 HWE kernel %s\n' "$kernel_version"
     printf 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package; legacy linux-modules-extra only when published for this kernel\n'

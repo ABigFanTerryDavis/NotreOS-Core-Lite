@@ -22,8 +22,8 @@ trap 'rm -rf "$inspect_dir"' EXIT
 xorriso -osirrox on -indev "$ISO" -extract /casper/filesystem.squashfs "$inspect_dir/filesystem.squashfs" >/dev/null 2>&1
 xorriso -osirrox on -indev "$ISO" -extract /casper/filesystem.manifest "$inspect_dir/filesystem.manifest" >/dev/null 2>&1
 squash="$inspect_dir/filesystem.squashfs"
-for package in zorin-os-lite-desktop-minimal zorin-os-lite-default-settings \
-               zorin-os-lite-live-settings xfce4-zorinmenulite-plugin xfdesktop4 \
+for package in zorin-os-lite-default-settings zorin-os-lite-live-settings \
+               xfce4-zorinmenulite-plugin xfdesktop4 \
                linux-modules-iwlwifi-generic-hwe-24.04; do
     grep -Eq "^installed ${package} " "$inspect_dir/filesystem.manifest" || {
         echo "Core Lite ISO is missing required package: $package" >&2; exit 1;
@@ -54,6 +54,7 @@ unsquashfs -cat "$squash" usr/share/doc/zorin-os-lite-default-settings/copyright
 unsquashfs -cat "$squash" usr/share/doc/xfce4-zorinmenulite-plugin/copyright | grep -Fq 'GPL-2+'
 unsquashfs -cat "$squash" usr/share/doc/zorin-icon-themes/copyright | grep -Fq 'CC-BY-SA-4.0'
 grep -Fq 'Zorin repositories: Launchpad Zorin OS Stable and Patches PPAs' "$MANIFEST"
+grep -Fq 'Zorin Lite profile seed verified before header pruning: zorin-os-lite-desktop-minimal' "$MANIFEST"
 grep -Fq 'official Zorin OS Lite Xsession (startxfce4)' "$MANIFEST"
 grep -Fq 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package' "$MANIFEST"
 

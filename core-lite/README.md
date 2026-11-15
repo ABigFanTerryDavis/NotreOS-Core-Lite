@@ -12,6 +12,8 @@ Epiphany, Thunar, Mousepad, Ristretto, File Roller, and XFCE Terminal are includ
 
 The image uses Ubuntu 24.04's HWE kernel and includes the signed generic Intel Wi-Fi module package. Ubuntu's current Noble 7.0 kernel line splits these drivers into specific signed packages instead of publishing `linux-modules-extra-<kernel>`; the builder installs that legacy package only when the selected kernel version actually provides it.
 
+`zorin-os-lite-desktop-minimal` is verified as a build-time profile seed before kernel-header pruning; the finished ISO is checked against the concrete Zorin desktop packages and session it retains.
+
 ## Build and test
 
 On Ubuntu 24.04, install `debootstrap`, `curl`, `gnupg`, `grub-efi-amd64-bin`, `grub-pc-bin`, `mtools`, `squashfs-tools`, and `xorriso`, then run:
