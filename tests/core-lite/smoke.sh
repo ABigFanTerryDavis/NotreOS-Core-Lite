@@ -41,7 +41,7 @@ required = {
     "ristretto", "thunar", "xfce4-terminal", "xfdesktop4", "xfce4-panel",
     "xfce4-session", "xserver-xorg", "zorin-os-lite-desktop-minimal",
     "zorin-os-lite-default-settings", "zorin-os-lite-live-settings",
-    "xfce4-zorinmenulite-plugin", "linux-firmware-amd-graphics",
+    "xfce4-zorinmenulite-plugin", "linux-firmware-minimal", "linux-firmware-amd-graphics",
     "linux-firmware-broadcom-wireless", "linux-firmware-intel-graphics",
     "linux-firmware-intel-wireless", "linux-firmware-mediatek",
     "linux-firmware-qualcomm-wireless", "linux-firmware-realtek",
@@ -49,6 +49,12 @@ required = {
 missing = required - packages
 assert not missing, f"missing required Core Lite packages: {sorted(missing)}"
 assert "linux-firmware" not in packages, "do not install the full firmware metapackage"
+excluded_firmware = {
+    "linux-firmware-nvidia-graphics", "linux-firmware-mellanox-spectrum",
+    "linux-firmware-marvell-prestera", "linux-firmware-netronome",
+    "linux-firmware-qlogic", "linux-firmware-qualcomm-misc",
+}
+assert not (excluded_firmware & packages), "large optional firmware blobs must remain excluded"
 assert not ({"snapd", "ubuntu-desktop", "xfce4-whiskermenu-plugin"} & packages), \
     "Core Lite must remain minimal and use Zorin Menu Lite rather than a generic substitute"
 
@@ -66,6 +72,7 @@ assert 'https://ppa.launchpadcontent.net/zorinos/stable/ubuntu' in build
 assert 'https://ppa.launchpadcontent.net/zorinos/patches/ubuntu' in build
 assert "B2228B8CCA5C00A2C59D35E530FCF8F64F71B61C" in build
 assert "zorin-os-lite-desktop-minimal" in build and "gpg --batch --show-keys" in build
+assert 'APT::Install-Recommends "false";' in build
 assert 'extra_modules_package="linux-modules-extra-$kernel_version"' in build
 assert 'apt-cache show "$extra_modules_package"' in build
 assert "${db:Status-Status} ${Package} ${Version}" in build

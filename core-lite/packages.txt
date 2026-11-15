@@ -21,6 +21,8 @@ libgl1-mesa-dri
 libgtk-3-bin
 lightdm
 lightdm-gtk-greeter
+# Provides the HWE image's linux-firmware dependency; APT recommends remain disabled.
+linux-firmware-minimal
 linux-firmware-amd-graphics
 linux-firmware-amd-misc
 linux-firmware-broadcom-wireless

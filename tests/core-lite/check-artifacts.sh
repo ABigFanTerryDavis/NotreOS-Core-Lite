@@ -30,7 +30,8 @@ for package in zorin-os-lite-desktop-minimal zorin-os-lite-default-settings \
                zorin-os-lite-live-settings xfce4-zorinmenulite-plugin xfdesktop4 \
                linux-image-generic-hwe-24.04 linux-modules-iwlwifi-generic-hwe-24.04 \
                epiphany-browser file-roller \
-               mousepad ristretto thunar xfce4-terminal linux-firmware-intel-wireless \
+               mousepad ristretto thunar xfce4-terminal linux-firmware-minimal \
+               linux-firmware-intel-wireless \
                linux-firmware-broadcom-wireless linux-firmware-realtek \
                linux-firmware-mediatek linux-firmware-qualcomm-wireless; do
     if ! manifest_has_package "$package"; then
@@ -44,6 +45,14 @@ if manifest_has_package linux-firmware; then
     echo 'Core Lite ISO must not install the full linux-firmware metapackage.' >&2
     exit 1
 fi
+for package in linux-firmware-nvidia-graphics linux-firmware-mellanox-spectrum \
+               linux-firmware-marvell-prestera linux-firmware-netronome \
+               linux-firmware-qlogic linux-firmware-qualcomm-misc; do
+    if manifest_has_package "$package"; then
+        echo "Core Lite ISO unexpectedly includes excluded firmware package: $package" >&2
+        exit 1
+    fi
+done
 xfdesktop_version="$(awk '$1 == "xfdesktop4" { print $2; exit }' "$inspect_dir/filesystem.manifest")"
 if [[ ! "$xfdesktop_version" =~ ^4\.20\. ]]; then
     echo 'Core Lite ISO must contain the Zorin-compatible XFCE 4.20 desktop package.' >&2; exit 1
@@ -73,7 +82,7 @@ grep -Fq 'Zorin repositories: Launchpad Zorin OS Stable and Patches PPAs' "$MANI
 grep -Fq 'Required Zorin Lite packages: zorin-os-lite-desktop-minimal, zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin' "$MANIFEST"
 grep -Fq 'official Zorin OS Lite Xsession (startxfce4)' "$MANIFEST"
 grep -Fq 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package' "$MANIFEST"
-grep -Fq 'Firmware trim: signed Ubuntu consumer Wi-Fi/graphics firmware splits' "$MANIFEST"
+grep -Fq 'Firmware trim: linux-firmware-minimal provider plus signed consumer Wi-Fi/graphics splits' "$MANIFEST"
 
 printf '%s\n' 'Core Lite ISO and live-root checks passed.'
 printf '%s\n' "$report" | grep -E 'El Torito|UEFI|image[0-9]' || true

@@ -129,6 +129,16 @@ for package in zorin-os-lite-desktop-minimal zorin-os-lite-default-settings \
     status="$(chroot "$ROOTFS_DIR" /usr/bin/dpkg-query -W -f='${Status}' "$package" 2>/dev/null || true)"
     [[ "$status" == 'install ok installed' ]] || fail "official Zorin Lite package is not installed: $package"
 done
+status="$(chroot "$ROOTFS_DIR" /usr/bin/dpkg-query -W -f='${Status}' linux-firmware-minimal 2>/dev/null || true)"
+[[ "$status" == 'install ok installed' ]] || fail 'Ubuntu HWE firmware dependency is not satisfied by linux-firmware-minimal.'
+status="$(chroot "$ROOTFS_DIR" /usr/bin/dpkg-query -W -f='${Status}' linux-firmware 2>/dev/null || true)"
+[[ "$status" != 'install ok installed' ]] || fail 'the full linux-firmware metapackage was installed instead of linux-firmware-minimal.'
+for package in linux-firmware-nvidia-graphics linux-firmware-mellanox-spectrum \
+               linux-firmware-marvell-prestera linux-firmware-netronome \
+               linux-firmware-qlogic linux-firmware-qualcomm-misc; do
+    status="$(chroot "$ROOTFS_DIR" /usr/bin/dpkg-query -W -f='${Status}' "$package" 2>/dev/null || true)"
+    [[ "$status" != 'install ok installed' ]] || fail "large optional firmware package was pulled into Core Lite: $package"
+done
 
 # Apply NotreOS identity and P4DE configuration after Zorin's official Lite defaults.
 cp -a "$OVERLAY_DIR"/. "$ROOTFS_DIR"/
@@ -196,8 +206,8 @@ rm -f "$ROOTFS_DIR/var/lib/dbus/machine-id"
 ln -s /etc/machine-id "$ROOTFS_DIR/var/lib/dbus/machine-id"
 
 printf 'Largest post-trim installed root filesystem directories (before squashfs):\n'
-du -x -B1 --max-depth=2 "$ROOTFS_DIR" | sort -nr | head -n 21 \
-    | awk -v root="$ROOTFS_DIR" '{ path = $2; sub(root, ".", path); printf "  %8.1f MiB  %s\n", $1 / 1048576, path }'
+du -x -B1 --max-depth=3 "$ROOTFS_DIR" | sort -nr \
+    | awk -v root="$ROOTFS_DIR" 'NR <= 40 { path = $2; sub(root, ".", path); printf "  %8.1f MiB  %s\n", $1 / 1048576, path }'
 
 cp "$ISO_BOOT_DIR/boot/grub/grub.cfg" "$STAGE_DIR/boot/grub/grub.cfg"
 printf 'Compressing the Zorin-profiled live root filesystem (xz, %s worker(s))...\n' "$JOBS"
@@ -219,7 +229,7 @@ squash_bytes="$(stat -c '%s' "$STAGE_DIR/casper/filesystem.squashfs")"
     printf 'Desktop: official Zorin OS Lite Xsession (startxfce4); P4DE starter, NotreOS theme/panel/menu icon, first-run Welcome\n'
     printf 'Kernel: Ubuntu 24.04 HWE kernel %s\n' "$kernel_version"
     printf 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package; legacy linux-modules-extra only when published for this kernel\n'
-    printf 'Firmware trim: signed Ubuntu consumer Wi-Fi/graphics firmware splits; omitted NVIDIA and data-center-only blobs from the full metapackage\n'
+    printf 'Firmware trim: linux-firmware-minimal provider plus signed consumer Wi-Fi/graphics splits; omitted NVIDIA and data-center-only blobs\n'
     printf 'Boot: GRUB UEFI and BIOS live ISO; casper read-only squashfs\n'
     printf 'Offline apps: Epiphany browser, Thunar file manager, Mousepad editor, Ristretto image viewer, File Roller, XFCE Terminal\n'
     printf 'Installed root filesystem before compression: %s bytes (%.1f MiB)\n' \
