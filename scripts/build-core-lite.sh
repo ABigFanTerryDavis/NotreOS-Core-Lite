@@ -173,9 +173,11 @@ systemctl --root="$ROOTFS_DIR" set-default graphical.target
 install -m 0644 "$ROOTFS_DIR/boot/vmlinuz-$kernel_version" "$STAGE_DIR/casper/vmlinuz"
 install -m 0644 "$ROOTFS_DIR/boot/initrd.img-$kernel_version" "$STAGE_DIR/casper/initrd"
 
-chroot "$ROOTFS_DIR" /usr/bin/dpkg-query -W -f='${db:Status-Status} ${binary:Package} ${Version}\n' \
+chroot "$ROOTFS_DIR" /usr/bin/dpkg-query -W -f='${db:Status-Status} ${Package} ${Version}\n' \
     | awk '$1 == "installed" { $1 = ""; sub(/^ /, ""); print }' \
     | sort > "$STAGE_DIR/casper/filesystem.manifest"
+printf '%s\n' 'Zorin/desktop/Wi-Fi package entries in the live manifest:'
+grep -E '^(zorin-os|xfce4-zorinmenulite-plugin|xfdesktop4|linux-modules-iwlwifi)' "$STAGE_DIR/casper/filesystem.manifest" || true
 cp "$STAGE_DIR/casper/filesystem.manifest" "$STAGE_DIR/casper/filesystem.manifest-desktop"
 unmount_all
 du -sx --block-size=1 "$ROOTFS_DIR" | awk '{ print $1 }' > "$STAGE_DIR/casper/filesystem.size"
@@ -210,8 +212,7 @@ squash_bytes="$(stat -c '%s' "$STAGE_DIR/casper/filesystem.squashfs")"
     printf 'Architecture: x86_64 (Ubuntu package architecture: amd64)\n'
     printf 'Base system: Zorin OS 18.1 Lite official minimal/live package profile on Ubuntu 24.04 LTS (Noble)\n'
     printf 'Zorin repositories: Launchpad Zorin OS Stable and Patches PPAs, noble/main; signing key fingerprint %s\n' "$ZORIN_KEY_FINGERPRINT"
-    printf 'Zorin Lite profile seed verified before header pruning: zorin-os-lite-desktop-minimal\n'
-    printf 'Retained Zorin desktop packages: zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin, xfdesktop4\n'
+    printf 'Required Zorin Lite packages: zorin-os-lite-desktop-minimal, zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin\n'
     printf 'Desktop: official Zorin OS Lite Xsession (startxfce4); P4DE starter, NotreOS theme/panel/menu icon, first-run Welcome\n'
     printf 'Kernel: Ubuntu 24.04 HWE kernel %s\n' "$kernel_version"
     printf 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package; legacy linux-modules-extra only when published for this kernel\n'

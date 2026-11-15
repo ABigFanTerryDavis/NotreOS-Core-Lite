@@ -63,6 +63,8 @@ assert "B2228B8CCA5C00A2C59D35E530FCF8F64F71B61C" in build
 assert "zorin-os-lite-desktop-minimal" in build and "gpg --batch --show-keys" in build
 assert 'extra_modules_package="linux-modules-extra-$kernel_version"' in build
 assert 'apt-cache show "$extra_modules_package"' in build
+assert "${db:Status-Status} ${Package} ${Version}" in build
+assert "${binary:Package}" not in build
 assert "Welcome to NotreOS Core Lite" in (profile / "overlay/usr/share/notreos/welcome/index.html").read_text()
 assert "notreos-welcome" in (profile / "overlay/etc/skel/.config/autostart/notreos-welcome.desktop").read_text()
 print("Core Lite source smoke checks passed.")

@@ -22,14 +22,22 @@ trap 'rm -rf "$inspect_dir"' EXIT
 xorriso -osirrox on -indev "$ISO" -extract /casper/filesystem.squashfs "$inspect_dir/filesystem.squashfs" >/dev/null 2>&1
 xorriso -osirrox on -indev "$ISO" -extract /casper/filesystem.manifest "$inspect_dir/filesystem.manifest" >/dev/null 2>&1
 squash="$inspect_dir/filesystem.squashfs"
-for package in zorin-os-lite-default-settings zorin-os-lite-live-settings \
-               xfce4-zorinmenulite-plugin xfdesktop4 \
+manifest_has_package() {
+    awk -v package="$1" '$1 == package { found = 1 } END { exit !found }' \
+        "$inspect_dir/filesystem.manifest"
+}
+for package in zorin-os-lite-desktop-minimal zorin-os-lite-default-settings \
+               zorin-os-lite-live-settings xfce4-zorinmenulite-plugin xfdesktop4 \
                linux-modules-iwlwifi-generic-hwe-24.04; do
-    grep -Eq "^installed ${package} " "$inspect_dir/filesystem.manifest" || {
-        echo "Core Lite ISO is missing required package: $package" >&2; exit 1;
-    }
+    if ! manifest_has_package "$package"; then
+        echo "Core Lite ISO is missing required package: $package" >&2
+        grep -E '^(zorin-os|xfce4-zorinmenulite-plugin|xfdesktop4|linux-modules-iwlwifi)' \
+            "$inspect_dir/filesystem.manifest" >&2 || true
+        exit 1
+    fi
 done
-if ! grep -Eq '^installed xfdesktop4 4\.20\.' "$inspect_dir/filesystem.manifest"; then
+xfdesktop_version="$(awk '$1 == "xfdesktop4" { print $2; exit }' "$inspect_dir/filesystem.manifest")"
+if [[ ! "$xfdesktop_version" =~ ^4\.20\. ]]; then
     echo 'Core Lite ISO must contain the Zorin-compatible XFCE 4.20 desktop package.' >&2; exit 1
 fi
 unsquashfs -cat "$squash" etc/notreos-release | grep -Fq 'VERSION="0.0.1"'
@@ -54,7 +62,7 @@ unsquashfs -cat "$squash" usr/share/doc/zorin-os-lite-default-settings/copyright
 unsquashfs -cat "$squash" usr/share/doc/xfce4-zorinmenulite-plugin/copyright | grep -Fq 'GPL-2+'
 unsquashfs -cat "$squash" usr/share/doc/zorin-icon-themes/copyright | grep -Fq 'CC-BY-SA-4.0'
 grep -Fq 'Zorin repositories: Launchpad Zorin OS Stable and Patches PPAs' "$MANIFEST"
-grep -Fq 'Zorin Lite profile seed verified before header pruning: zorin-os-lite-desktop-minimal' "$MANIFEST"
+grep -Fq 'Required Zorin Lite packages: zorin-os-lite-desktop-minimal, zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin' "$MANIFEST"
 grep -Fq 'official Zorin OS Lite Xsession (startxfce4)' "$MANIFEST"
 grep -Fq 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package' "$MANIFEST"
 
