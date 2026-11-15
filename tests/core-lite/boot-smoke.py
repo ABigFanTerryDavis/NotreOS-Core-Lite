@@ -14,22 +14,24 @@ import time
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("iso")
-    parser.add_argument("firmware", help="non-secure OVMF_CODE firmware image")
+    parser.add_argument("firmware_code", help="non-secure OVMF_CODE pflash image")
+    parser.add_argument("firmware_vars", help="writable copy of the matching OVMF_VARS image")
     parser.add_argument("--timeout", type=int, default=360)
     args = parser.parse_args()
 
     qemu = shutil.which("qemu-system-x86_64")
     if not qemu:
         parser.error("qemu-system-x86_64 is not installed")
-    if not os.path.isfile(args.iso) or not os.path.isfile(args.firmware):
-        parser.error("ISO or OVMF firmware path does not exist")
+    if not all(os.path.isfile(path) for path in (args.iso, args.firmware_code, args.firmware_vars)):
+        parser.error("ISO or OVMF CODE/VARS firmware path does not exist")
 
     command = [
         qemu,
         "-machine", "q35,accel=tcg",
         "-m", "4096",
         "-smp", "2",
-        "-bios", args.firmware,
+        "-drive", f"if=pflash,format=raw,unit=0,readonly=on,file={args.firmware_code}",
+        "-drive", f"if=pflash,format=raw,unit=1,file={args.firmware_vars}",
         "-cdrom", args.iso,
         "-boot", "order=d",
         "-display", "none",
