@@ -83,6 +83,7 @@ grep -Fq 'Required Zorin Lite packages: zorin-os-lite-desktop-minimal, zorin-os-
 grep -Fq 'official Zorin OS Lite Xsession (startxfce4)' "$MANIFEST"
 grep -Fq 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package' "$MANIFEST"
 grep -Fq 'Firmware trim: linux-firmware-minimal provider plus signed consumer Wi-Fi/graphics splits' "$MANIFEST"
+grep -Fq 'Casper overlay fix: modprobe is non-fatal for built-in OverlayFS; actual mount decides support (LP #2055021)' "$MANIFEST"
 
 printf '%s\n' 'Core Lite ISO and live-root checks passed.'
 printf '%s\n' "$report" | grep -E 'El Torito|UEFI|image[0-9]' || true

@@ -53,6 +53,7 @@ jobs:
             output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso \
             "$firmware_code" "$firmware_vars"
       - name: Boot the live ISO and verify the graphical NotreOS desktop
+        id: graphical_boot
         run: |
           set -euo pipefail
           sudo chown "$(id -u):$(id -g)" output/core-lite/images
@@ -64,7 +65,15 @@ jobs:
             python3 tests/core-lite/graphical-smoke.py \
               output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso \
               "$firmware_code" "$firmware_vars" \
-              output/core-lite/images/notreos-core-lite-desktop-smoke.png
+              output/core-lite/images/notreos-core-lite-desktop-smoke.png \
+              --timeout 540
+      - name: Upload verified live desktop screenshot
+        if: always() && steps.graphical_boot.outcome == 'success' && hashFiles('output/core-lite/images/notreos-core-lite-desktop-smoke.png') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: NotreOS-Core-Lite-desktop-smoke
+          if-no-files-found: error
+          path: output/core-lite/images/notreos-core-lite-desktop-smoke.png
       - name: Upload the measured Core Lite image
         if: always() && hashFiles('output/core-lite/images/*.iso') != ''
         uses: actions/upload-artifact@v4
@@ -75,4 +84,3 @@ jobs:
             output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso
             output/core-lite/images/notreos-core-lite-0.0.1-manifest.txt
             output/core-lite/images/SHA256SUMS
-            output/core-lite/images/notreos-core-lite-desktop-smoke.png

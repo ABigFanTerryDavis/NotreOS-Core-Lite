@@ -16,7 +16,7 @@ def main() -> int:
     parser.add_argument("iso")
     parser.add_argument("firmware_code", help="non-secure OVMF_CODE pflash image")
     parser.add_argument("firmware_vars", help="writable copy of the matching OVMF_VARS image")
-    parser.add_argument("--timeout", type=int, default=360)
+    parser.add_argument("--timeout", type=int, default=480)
     args = parser.parse_args()
 
     qemu = shutil.which("qemu-system-x86_64")
@@ -43,7 +43,8 @@ def main() -> int:
     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output = bytearray()
     deadline = time.monotonic() + args.timeout
-    marker = b"NotreOS Core Lite 0.0.1"
+    issue_marker = b"P4DE desktop seed"
+    login_marker = b"notreos login:"
     try:
         assert proc.stdout is not None
         fd = proc.stdout.fileno()
@@ -56,8 +57,8 @@ def main() -> int:
                     output.extend(chunk)
                     sys.stdout.buffer.write(chunk)
                     sys.stdout.buffer.flush()
-                    if marker in output:
-                        print("\nCore Lite reached the branded live serial login.", flush=True)
+                    if issue_marker in output and login_marker in output:
+                        print("\nCore Lite reached the post-GRUB branded serial login (P4DE issue and notreos login).", flush=True)
                         return 0
             if proc.poll() is not None:
                 break

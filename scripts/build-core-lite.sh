@@ -175,6 +175,31 @@ if chroot "$ROOTFS_DIR" /usr/bin/apt-cache show "$extra_modules_package" >/dev/n
 else
     printf 'No %s package is published for kernel %s; retaining the signed split HWE modules in the profile.\n' "$extra_modules_package" "$kernel_version"
 fi
+# Ubuntu Launchpad #2055021: built-in OverlayFS can make modprobe return nonzero;
+# remove only casper's fatal probe guard so the actual overlay mount decides support.
+python3 - "$ROOTFS_DIR/usr/share/initramfs-tools/scripts/casper" <<'PY'
+from pathlib import Path
+import sys
+
+script = Path(sys.argv[1])
+if not script.is_file():
+    raise SystemExit(f"missing casper initramfs script: {script}")
+lines = script.read_text(encoding="utf-8").splitlines(keepends=True)
+probe = 'modprobe "${MP_QUIET}" -b overlay'
+matches = [index for index, line in enumerate(lines) if probe in line]
+if len(matches) != 1:
+    raise SystemExit(f"expected one casper overlay probe, found {len(matches)}")
+index = matches[0]
+line = lines[index]
+if "|| panic" in line and "format specified as" in line:
+    lines[index] = line.split("|| panic", 1)[0].rstrip() + ("\n" if line.endswith("\n") else "")
+    script.write_text("".join(lines), encoding="utf-8")
+    print("Patched casper's built-in OverlayFS false-positive (Launchpad #2055021).", flush=True)
+elif "|| panic" in line:
+    raise SystemExit("casper overlay probe has an unexpected fatal condition; review the compatibility patch")
+else:
+    print("Casper overlay probe already permits built-in OverlayFS; no patch needed.", flush=True)
+PY
 chroot "$ROOTFS_DIR" /usr/sbin/update-initramfs -u -k "$kernel_version"
 systemctl --root="$ROOTFS_DIR" enable lightdm.service NetworkManager.service
 systemctl --root="$ROOTFS_DIR" set-default graphical.target
@@ -231,6 +256,7 @@ squash_bytes="$(stat -c '%s' "$STAGE_DIR/casper/filesystem.squashfs")"
     printf 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package; legacy linux-modules-extra only when published for this kernel\n'
     printf 'Firmware trim: linux-firmware-minimal provider plus signed consumer Wi-Fi/graphics splits; omitted NVIDIA and data-center-only blobs\n'
     printf 'Boot: GRUB UEFI and BIOS live ISO; casper read-only squashfs\n'
+    printf 'Casper overlay fix: modprobe is non-fatal for built-in OverlayFS; actual mount decides support (LP #2055021)\n'
     printf 'Offline apps: Epiphany browser, Thunar file manager, Mousepad editor, Ristretto image viewer, File Roller, XFCE Terminal\n'
     printf 'Installed root filesystem before compression: %s bytes (%.1f MiB)\n' \
         "$rootfs_bytes" "$(awk -v n="$rootfs_bytes" 'BEGIN { print n / 1048576 }')"

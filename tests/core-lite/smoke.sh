@@ -77,6 +77,15 @@ assert 'extra_modules_package="linux-modules-extra-$kernel_version"' in build
 assert 'apt-cache show "$extra_modules_package"' in build
 assert "${db:Status-Status} ${Package} ${Version}" in build
 assert "${binary:Package}" not in build
+assert "Launchpad #2055021" in build
+assert 'modprobe "${MP_QUIET}" -b overlay' in build
+serial_smoke = (profile.parent / "tests/core-lite/boot-smoke.py").read_text()
+assert 'issue_marker = b"P4DE desktop seed"' in serial_smoke
+assert 'login_marker = b"notreos login:"' in serial_smoke
+assert 'marker = b"NotreOS Core Lite 0.0.1"' not in serial_smoke
+assert "P4DE desktop seed" in (profile / "overlay/etc/issue").read_text()
+grub = (profile / "iso/boot/grub/grub.cfg").read_text()
+assert "console=ttyS0,115200n8" in grub and "splash" not in grub
 assert "Welcome to NotreOS Core Lite" in (profile / "overlay/usr/share/notreos/welcome/index.html").read_text()
 assert "notreos-welcome" in (profile / "overlay/etc/skel/.config/autostart/notreos-welcome.desktop").read_text()
 print("Core Lite source smoke checks passed.")
