@@ -35,7 +35,8 @@ packages = set(package_lines)
 assert len(package_lines) == len(packages), "Core Lite package profile contains duplicate entries"
 required = {
     "casper", "epiphany-browser", "file-roller", "fonts-zorin-os-core",
-    "libgtk-3-bin", "linux-firmware", "mousepad", "network-manager",
+    "libgtk-3-bin", "linux-firmware", "linux-generic-hwe-24.04",
+    "linux-modules-iwlwifi-generic-hwe-24.04", "mousepad", "network-manager",
     "ristretto", "thunar", "xfdesktop4", "xfce4-panel", "xfce4-session",
     "xserver-xorg", "zorin-os-lite-desktop-minimal",
     "zorin-os-lite-default-settings", "zorin-os-lite-live-settings",
@@ -60,6 +61,8 @@ assert 'https://ppa.launchpadcontent.net/zorinos/stable/ubuntu' in build
 assert 'https://ppa.launchpadcontent.net/zorinos/patches/ubuntu' in build
 assert "B2228B8CCA5C00A2C59D35E530FCF8F64F71B61C" in build
 assert "zorin-os-lite-desktop-minimal" in build and "gpg --batch --show-keys" in build
+assert 'extra_modules_package="linux-modules-extra-$kernel_version"' in build
+assert 'apt-cache show "$extra_modules_package"' in build
 assert "Welcome to NotreOS Core Lite" in (profile / "overlay/usr/share/notreos/welcome/index.html").read_text()
 assert "notreos-welcome" in (profile / "overlay/etc/skel/.config/autostart/notreos-welcome.desktop").read_text()
 print("Core Lite source smoke checks passed.")

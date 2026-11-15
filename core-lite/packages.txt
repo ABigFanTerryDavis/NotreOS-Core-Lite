@@ -23,6 +23,7 @@ lightdm
 lightdm-gtk-greeter
 linux-firmware
 linux-generic-hwe-24.04
+linux-modules-iwlwifi-generic-hwe-24.04
 locales
 mate-polkit
 mousepad

@@ -159,7 +159,12 @@ chroot "$ROOTFS_DIR" /usr/sbin/update-locale LANG=en_US.UTF-8
 kernel_file="$(find "$ROOTFS_DIR/boot" -maxdepth 1 -type f -name 'vmlinuz-*' -printf '%f\n' | sort -V | tail -n 1)"
 [[ -n "$kernel_file" ]] || fail 'the Ubuntu 24.04 HWE kernel image was not installed.'
 kernel_version="${kernel_file#vmlinuz-}"
-chroot "$ROOTFS_DIR" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends "linux-modules-extra-$kernel_version"
+extra_modules_package="linux-modules-extra-$kernel_version"
+if chroot "$ROOTFS_DIR" /usr/bin/apt-cache show "$extra_modules_package" >/dev/null 2>&1; then
+    chroot "$ROOTFS_DIR" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get install --yes --no-install-recommends "$extra_modules_package"
+else
+    printf 'No %s package is published for kernel %s; retaining the signed split HWE modules in the profile.\n' "$extra_modules_package" "$kernel_version"
+fi
 chroot "$ROOTFS_DIR" /usr/bin/env DEBIAN_FRONTEND=noninteractive apt-get purge --yes 'linux-headers-*'
 chroot "$ROOTFS_DIR" /usr/sbin/update-initramfs -u -k "$kernel_version"
 systemctl --root="$ROOTFS_DIR" enable lightdm.service NetworkManager.service
@@ -208,6 +213,7 @@ squash_bytes="$(stat -c '%s' "$STAGE_DIR/casper/filesystem.squashfs")"
     printf 'Required Zorin Lite packages: zorin-os-lite-desktop-minimal, zorin-os-lite-default-settings, zorin-os-lite-live-settings, xfce4-zorinmenulite-plugin\n'
     printf 'Desktop: official Zorin OS Lite Xsession (startxfce4); P4DE starter, NotreOS theme/panel/menu icon, first-run Welcome\n'
     printf 'Kernel: Ubuntu 24.04 HWE kernel %s\n' "$kernel_version"
+    printf 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package; legacy linux-modules-extra only when published for this kernel\n'
     printf 'Boot: GRUB UEFI and BIOS live ISO; casper read-only squashfs\n'
     printf 'Offline apps: Epiphany browser, Thunar file manager, Mousepad editor, Ristretto image viewer, File Roller, XFCE Terminal\n'
     printf 'Installed root filesystem before compression: %s bytes (%.1f MiB)\n' \

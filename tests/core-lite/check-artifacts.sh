@@ -23,9 +23,10 @@ xorriso -osirrox on -indev "$ISO" -extract /casper/filesystem.squashfs "$inspect
 xorriso -osirrox on -indev "$ISO" -extract /casper/filesystem.manifest "$inspect_dir/filesystem.manifest" >/dev/null 2>&1
 squash="$inspect_dir/filesystem.squashfs"
 for package in zorin-os-lite-desktop-minimal zorin-os-lite-default-settings \
-               zorin-os-lite-live-settings xfce4-zorinmenulite-plugin xfdesktop4; do
+               zorin-os-lite-live-settings xfce4-zorinmenulite-plugin xfdesktop4 \
+               linux-modules-iwlwifi-generic-hwe-24.04; do
     grep -Eq "^installed ${package} " "$inspect_dir/filesystem.manifest" || {
-        echo "Core Lite ISO is missing required Zorin package: $package" >&2; exit 1;
+        echo "Core Lite ISO is missing required package: $package" >&2; exit 1;
     }
 done
 if ! grep -Eq '^installed xfdesktop4 4\.20\.' "$inspect_dir/filesystem.manifest"; then
@@ -54,6 +55,7 @@ unsquashfs -cat "$squash" usr/share/doc/xfce4-zorinmenulite-plugin/copyright | g
 unsquashfs -cat "$squash" usr/share/doc/zorin-icon-themes/copyright | grep -Fq 'CC-BY-SA-4.0'
 grep -Fq 'Zorin repositories: Launchpad Zorin OS Stable and Patches PPAs' "$MANIFEST"
 grep -Fq 'official Zorin OS Lite Xsession (startxfce4)' "$MANIFEST"
+grep -Fq 'Intel Wi-Fi: signed Ubuntu HWE iwlwifi module package' "$MANIFEST"
 
 printf '%s\n' 'Core Lite ISO and live-root checks passed.'
 printf '%s\n' "$report" | grep -E 'El Torito|UEFI|image[0-9]' || true

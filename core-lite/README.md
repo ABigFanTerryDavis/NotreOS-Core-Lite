@@ -10,6 +10,8 @@ LightDM starts Zorin's packaged `zorin-os-lite` Xsession entry, which launches `
 
 Epiphany, Thunar, Mousepad, Ristretto, File Roller, and XFCE Terminal are included in the ISO, so these basic tools are available without downloading them after boot. NetworkManager and its panel applet are included for Wi-Fi and wired setup. The official [Zorin OS 18.1 Lite package list](https://assets.zorincdn.com/zorin.com/downloads/installed-package-lists/18/Zorin-OS-18.1-Lite.zip) is the reference for the upstream Lite profile.
 
+The image uses Ubuntu 24.04's HWE kernel and includes the signed generic Intel Wi-Fi module package. Ubuntu's current Noble 7.0 kernel line splits these drivers into specific signed packages instead of publishing `linux-modules-extra-<kernel>`; the builder installs that legacy package only when the selected kernel version actually provides it.
+
 ## Build and test
 
 On Ubuntu 24.04, install `debootstrap`, `curl`, `gnupg`, `grub-efi-amd64-bin`, `grub-pc-bin`, `mtools`, `squashfs-tools`, and `xorriso`, then run:
