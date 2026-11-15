@@ -195,7 +195,7 @@ du -sx --block-size=1 "$ROOTFS_DIR" | awk '{ print $1 }' > "$STAGE_DIR/casper/fi
 find "$ROOTFS_DIR/boot" -maxdepth 1 -type f \
     \( -name 'vmlinuz-*' -o -name 'initrd.img-*' -o -name 'System.map-*' -o -name 'config-*' \) \
     -delete
-rm -rf "$ROOTFS_DIR/var/lib/apt/lists"/* "$ROOTFS_DIR/var/cache/apt/archives"/* \
+rm -rf "$ROOTFS_DIR/var/lib/apt/lists"/* "$ROOTFS_DIR/var/cache/apt" \
        "$ROOTFS_DIR/var/log/installer" "$ROOTFS_DIR/tmp"/* "$ROOTFS_DIR/var/tmp"/*
 find "$ROOTFS_DIR/usr/share/doc" -type f ! -name copyright -delete 2>/dev/null || true
 rm -rf "$ROOTFS_DIR/usr/share/man" "$ROOTFS_DIR/usr/share/info"
