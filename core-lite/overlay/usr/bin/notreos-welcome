@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
+marker="$config_home/notreos/welcome-shown"
+[ -e "$marker" ] && exit 0
+mkdir -p "$(dirname "$marker")"
+: > "$marker"
+
+(
+    sleep 2
+    if command -v epiphany >/dev/null 2>&1; then
+        exec epiphany --new-window 'file:///usr/share/notreos/welcome/index.html'
+    fi
+    if command -v zenity >/dev/null 2>&1; then
+        zenity --info --title='Welcome to NotreOS Core Lite' \
+            --text='Your NotreOS desktop is ready. Open the Welcome guide from the application menu for offline tips and included apps.'
+    fi
+) >/dev/null 2>&1 &
+exit 0

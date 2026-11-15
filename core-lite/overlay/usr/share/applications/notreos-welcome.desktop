@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=NotreOS Welcome
+Comment=Read the offline Core Lite getting-started guide
+Exec=/usr/bin/notreos-welcome
+Icon=help-about
+Terminal=false
+Categories=Utility;Documentation;

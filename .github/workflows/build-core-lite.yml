@@ -1,0 +1,63 @@
+name: Build NotreOS Core Lite
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'core-lite/**'
+      - 'scripts/build-core-lite.sh'
+      - 'tests/core-lite/**'
+      - '.github/workflows/build-core-lite.yml'
+      - 'README.md'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'core-lite/**'
+      - 'scripts/build-core-lite.sh'
+      - 'tests/core-lite/**'
+      - '.github/workflows/build-core-lite.yml'
+      - 'README.md'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-and-boot:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Run Core Lite source smoke checks
+        run: ./tests/core-lite/smoke.sh
+      - name: Install image-build and QEMU tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y \
+            curl debootstrap gnupg grub-efi-amd64-bin grub-pc-bin mtools \
+            ovmf qemu-system-x86 squashfs-tools xorriso
+      - name: Build NotreOS Core Lite from the Zorin OS 18.1 Lite package profile
+        run: sudo env NOTREOS_JOBS=2 ./scripts/build-core-lite.sh
+      - name: Boot the live ISO under OVMF/QEMU
+        run: |
+          set -euo pipefail
+          firmware_code=/usr/share/OVMF/OVMF_CODE.fd
+          if [ ! -e "$firmware_code" ]; then
+            firmware_code=/usr/share/OVMF/OVMF_CODE_4M.fd
+          fi
+          if [ ! -e "$firmware_code" ]; then
+            echo 'No non-secure OVMF_CODE firmware was installed.' >&2
+            find /usr/share/OVMF -maxdepth 1 \( -type f -o -type l \) -name 'OVMF*.fd' -print >&2 || true
+            exit 1
+          fi
+          python3 tests/core-lite/boot-smoke.py \
+            output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso \
+            "$firmware_code"
+      - name: Upload the measured Core Lite image
+        if: always() && hashFiles('output/core-lite/images/*.iso') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: NotreOS-Core-Lite-0.0.1-x86_64
+          if-no-files-found: error
+          path: |
+            output/core-lite/images/notreos-core-lite-0.0.1-x86_64.iso
+            output/core-lite/images/notreos-core-lite-0.0.1-manifest.txt
+            output/core-lite/images/SHA256SUMS

@@ -1,0 +1,6 @@
+NAME="NotreOS Core Lite"
+EDITION="Core Lite"
+VERSION="0.0.1"
+ARCH="x86_64"
+BASE="Ubuntu 24.04 LTS (Noble Numbat)"
+DESKTOP="P4DE starter session on XFCE"

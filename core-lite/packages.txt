@@ -1,0 +1,53 @@
+# Official Zorin OS 18.1 Lite packages from Zorin's signed Noble Stable and Patches archives.
+# The Patches archive provides xfdesktop4 4.20 to match Zorin Stable's XFCE 4.20 windowing stack.
+# These packages use Zorin's official Lite-minimal profile, defaults/live settings and menu plug-in.
+zorin-os-lite-desktop-minimal
+zorin-os-lite-default-settings
+zorin-os-lite-live-settings
+xfce4-zorinmenulite-plugin
+fonts-zorin-os-core
+xfdesktop4
+
+# Offline-ready NotreOS essentials and live-session components.
+adwaita-icon-theme
+ca-certificates
+casper
+dbus-x11
+epiphany-browser
+file-roller
+fonts-dejavu-core
+gtk2-engines-pixbuf
+libgl1-mesa-dri
+libgtk-3-bin
+lightdm
+lightdm-gtk-greeter
+linux-firmware
+linux-generic-hwe-24.04
+locales
+mate-polkit
+mousepad
+network-manager
+network-manager-gnome
+policykit-1
+ristretto
+sudo
+systemd-sysv
+thunar
+thunar-archive-plugin
+thunar-volman
+upower
+xfce4-panel
+xfce4-power-manager
+xfce4-screenshooter
+xfce4-session
+xfce4-settings
+xfce4-taskmanager
+xfce4-terminal
+xfconf
+xfwm4
+xserver-xorg
+xserver-xorg-input-all
+xserver-xorg-video-all
+xdg-user-dirs
+xdg-utils
+zenity

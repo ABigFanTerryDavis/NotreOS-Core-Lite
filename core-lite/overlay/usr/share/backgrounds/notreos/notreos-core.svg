@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#101820"/>
+      <stop offset="0.55" stop-color="#172637"/>
+      <stop offset="1" stop-color="#16445c"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="76%" cy="22%" r="70%">
+      <stop offset="0" stop-color="#48b9e7" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#48b9e7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shape" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#45c0e8" stop-opacity=".72"/>
+      <stop offset="1" stop-color="#4d76d5" stop-opacity=".12"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#bg)"/>
+  <rect width="1920" height="1080" fill="url(#glow)"/>
+  <path d="M1260 0h660v690L1260 0Z" fill="url(#shape)" opacity=".5"/>
+  <path d="M1920 360v720H940L1920 360Z" fill="#1c6681" opacity=".28"/>
+  <path d="M1500 0h120L910 1080H790L1500 0Z" fill="#94e5f6" opacity=".08"/>
+  <circle cx="1530" cy="270" r="280" fill="none" stroke="#a4ebf5" stroke-opacity=".12" stroke-width="2"/>
+  <circle cx="1530" cy="270" r="360" fill="none" stroke="#a4ebf5" stroke-opacity=".08" stroke-width="2"/>
+  <g font-family="DejaVu Sans, sans-serif" fill="#eaf6fb">
+    <text x="120" y="795" font-size="26" letter-spacing="8" fill="#81d6ed">NOTREOS · CORE LITE</text>
+    <text x="112" y="900" font-size="84" font-weight="700">A lighter starting point.</text>
+    <text x="120" y="958" font-size="30" fill="#bed0dd">P4DE desktop seed · 0.0.1</text>
+  </g>
+</svg>

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Welcome to NotreOS Core Lite</title>
+  <style>
+    :root { color-scheme: dark; --bg:#111821; --card:#1b2734; --line:#334354; --text:#edf4fb; --muted:#b4c3d2; --accent:#52b6e8; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:radial-gradient(ellipse at 85% 0,#1d3a53 0,transparent 42%),var(--bg); color:var(--text); font:16px/1.6 system-ui,sans-serif; }
+    main { width:min(900px,92vw); margin:7vh auto; }
+    .tag { color:var(--accent); text-transform:uppercase; letter-spacing:.14em; font-size:.8rem; font-weight:700; }
+    h1 { margin:.25rem 0 .6rem; font-size:clamp(2.5rem,8vw,5rem); line-height:1.05; }
+    h2 { font-size:1.15rem; margin:0 0 .45rem; }
+    p { color:var(--muted); }
+    .lead { max-width:62ch; font-size:1.15rem; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; margin:2rem 0; }
+    .card { padding:1.2rem; background:var(--card); border:1px solid var(--line); border-radius:14px; }
+    .card p { margin:.35rem 0 0; font-size:.95rem; }
+    .note { border-left:3px solid var(--accent); padding:.4rem 1rem; }
+    footer { margin-top:2.5rem; color:#8da0b3; font-size:.85rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="tag">NotreOS · Core Lite 0.0.1</div>
+    <h1>Welcome.</h1>
+    <p class="lead">This is the first Core Lite desktop seed. P4DE is starting with a light XFCE session, a NotreOS look, and the everyday tools below already on your live system.</p>
+    <section class="grid" aria-label="Included offline apps">
+      <article class="card"><h2>Browse</h2><p>Epiphany is included for web pages. It can be used when a connection is available.</p></article>
+      <article class="card"><h2>Files</h2><p>Thunar is your file manager. The live session keeps changes in memory and is not a disk installer.</p></article>
+      <article class="card"><h2>Write and view</h2><p>Mousepad, Ristretto, and File Roller are included for notes, pictures, and archives.</p></article>
+      <article class="card"><h2>Connect</h2><p>Open the network icon in the panel to set up Wi-Fi or wired networking.</p></article>
+    </section>
+    <p class="note">This live image is built from the Ubuntu 24.04 LTS package base. It is designed to run without installing packages or downloading the desktop after boot.</p>
+    <footer>NotreOS Core Lite 0.0.1 · P4DE starter session · Powered by XFCE</footer>
+  </main>
+</body>
+</html>

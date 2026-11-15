@@ -1,0 +1,9 @@
+[Xfce Panel]
+Type=X-XFCE-PanelPlugin
+Encoding=UTF-8
+Name=NotreOS Menu
+Comment=Open the NotreOS applications menu
+Icon=notreos-menu-symbolic
+X-XFCE-Module=zorinmenulite
+X-XFCE-Internal=false
+X-XFCE-API=2.0

@@ -1,0 +1,15 @@
+@import url("resource:///org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
+
+@define-color window_bg_color #17222e;
+@define-color window_fg_color #eaf2f9;
+@define-color view_bg_color #111821;
+@define-color view_fg_color #eaf2f9;
+@define-color accent_bg_color #168bb6;
+@define-color accent_fg_color #ffffff;
+@define-color accent_color #52b6e8;
+
+window, dialog { background-color: @window_bg_color; color: @window_fg_color; }
+headerbar { background-color: #1d2b39; color: @window_fg_color; }
+button { background-color: #263746; color: @window_fg_color; border: 1px solid #3c5266; border-radius: 7px; }
+button:hover { background-color: #304a5c; }
+entry, textview, listview, gridview { background-color: @view_bg_color; color: @view_fg_color; }

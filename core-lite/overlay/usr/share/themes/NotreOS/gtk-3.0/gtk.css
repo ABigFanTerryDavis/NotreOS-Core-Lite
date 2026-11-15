@@ -1,0 +1,21 @@
+@import url("resource:///org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css");
+
+@define-color theme_bg_color #17222e;
+@define-color theme_fg_color #eaf2f9;
+@define-color theme_base_color #111821;
+@define-color theme_text_color #eaf2f9;
+@define-color theme_selected_bg_color #168bb6;
+@define-color theme_selected_fg_color #ffffff;
+@define-color theme_unfocused_selected_bg_color #28475b;
+@define-color theme_unfocused_selected_fg_color #edf6fb;
+@define-color theme_border_color #344a5e;
+@define-color theme_unfocused_border_color #283949;
+@define-color accent_color #52b6e8;
+
+window, dialog { background-color: @theme_bg_color; color: @theme_fg_color; }
+headerbar, .titlebar { background-image: none; background-color: #1d2b39; color: @theme_fg_color; }
+button, .button { background-image: none; background-color: #263746; color: @theme_fg_color; border: 1px solid #3c5266; border-radius: 7px; padding: 5px 9px; }
+button:hover, .button:hover { background-color: #304a5c; }
+button:checked, button:active, .button:checked, .button:active { background-color: #168bb6; color: #ffffff; }
+entry, textview, treeview, list { background-color: @theme_base_color; color: @theme_text_color; }
+selection { background-color: @theme_selected_bg_color; color: @theme_selected_fg_color; }

@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=NotreOS
+Comment=NotreOS Core Lite dark blue GTK theme
+Type=X-GNOME-Metatheme
+GtkTheme=NotreOS
+IconTheme=Adwaita
+CursorTheme=Adwaita
