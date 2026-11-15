@@ -99,11 +99,12 @@ def main() -> int:
                         print(f"GUI capture is not ready yet: {exc}", flush=True)
                         continue
                     folded = re.sub(r"[^a-z0-9]+", " ", last_text.casefold())
-                    found = [marker for marker in ("welcome", "epiphany", "thunar") if marker in folded]
-                    if len(found) == 3:
+                    markers = ("welcome", "epiphany", "core lite desktop seed")
+                    found = [marker for marker in markers if marker in folded]
+                    if len(found) == len(markers):
                         shutil.copy2(png_path, screenshot)
                         print("Core Lite graphical smoke passed: the live desktop's NotreOS Welcome window is visible.")
-                        print("OCR markers: Welcome, Epiphany, Thunar")
+                        print("OCR markers: Welcome, Epiphany, Core Lite desktop seed")
                         print(f"Desktop screenshot: {screenshot}")
                         print("Recognized desktop text:\n" + last_text, flush=True)
                         return 0

@@ -84,6 +84,8 @@ assert 'issue_marker = b"P4DE desktop seed"' in serial_smoke
 assert 'login_marker = b"notreos login:"' in serial_smoke
 assert 'marker = b"NotreOS Core Lite 0.0.1"' not in serial_smoke
 assert "P4DE desktop seed" in (profile / "overlay/etc/issue").read_text()
+graphical_smoke = (profile.parent / "tests/core-lite/graphical-smoke.py").read_text()
+assert 'markers = ("welcome", "epiphany", "core lite desktop seed")' in graphical_smoke
 grub = (profile / "iso/boot/grub/grub.cfg").read_text()
 assert "console=ttyS0,115200n8" in grub and "splash" not in grub
 assert "Welcome to NotreOS Core Lite" in (profile / "overlay/usr/share/notreos/welcome/index.html").read_text()
